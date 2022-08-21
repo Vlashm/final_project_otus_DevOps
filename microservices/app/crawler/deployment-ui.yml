@@ -1,0 +1,30 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ui
+  namespace: app
+  labels:
+    app: search_engine
+    component: ui
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: search_engine
+      component: ui
+  template:
+    metadata:
+      name: ui
+      labels:
+        app: search_engine
+        component: ui
+    spec:
+      containers:
+      - name: ui
+        image: vlashm/crawler-ui:latest
+        env:
+          - name: MONGO
+            value: server-mongodb
+          - name: MONGO_PORT 
+            value: "27017"

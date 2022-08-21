@@ -1,0 +1,23 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kibana
+  namespace: logging
+  labels:
+    k8s-app: kibana
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      k8s-app: kibana
+  template:
+    metadata:
+      labels:
+        k8s-app: kibana
+    spec:
+      containers:
+      - name: kibana
+        image: bitnami/kibana:latest
+        ports:
+        - containerPort: 5601

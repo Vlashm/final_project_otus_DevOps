@@ -1,0 +1,4 @@
+---
+- import_playbook: install-docker.yml
+- import_playbook: install-gitlab.yml 
+- import_playbook: start-runer.yml 

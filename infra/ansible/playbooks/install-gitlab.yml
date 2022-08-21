@@ -1,0 +1,37 @@
+---
+- name: Install Gitlab
+  hosts: gitlab
+  become: true
+  vars:
+    root_password: qwerty123
+  tasks:
+
+    - name: Create directory
+      file:
+        path: "{{ item }}"
+        state: directory
+      with_items:
+        - /srv/gitlab/config
+        - /srv/gitlab/data
+        - /srv/gitlab/logs
+
+    - name: Install Gitlab
+      community.docker.docker_container:
+        name: gitlab
+        image: 'gitlab/gitlab-ce:latest'
+        hostname: gitlab.vlashm.site
+        restart: true
+        restart_policy: always
+        state: started
+        env:
+          GITLAB_OMNIBUS_CONFIG: |
+            external_url "http://gitlab.vlashm.site"
+            gitlab_rails['initial_root_password'] = '{{ root_password }}'
+        ports:
+          - '80:80'
+          - '443:443'
+          - '2222:22'
+        volumes:
+          - '/srv/gitlab/config:/etc/gitlab'
+          - '/srv/gitlab/logs:/var/log/gitlab'
+          - '/srv/gitlab/data:/var/opt/gitlab'

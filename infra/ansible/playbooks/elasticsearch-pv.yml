@@ -1,0 +1,25 @@
+---
+- hosts: localhost
+  tasks:
+  - include_vars: ../values/elasticsearch_id_file.yml 
+  - name: Create a PersistentVolume 
+    kubernetes.core.k8s:
+      state: present
+      definition:
+        apiVersion: v1
+        kind: PersistentVolume
+        metadata:
+          name: "{{ item.name }}"
+        spec:
+          capacity:
+            storage: 15Gi
+          accessModes: [ "ReadWriteOnce" ]
+          storageClassName: default
+          claimRef:
+            name: "{{ item.name }}"
+            namespace: logging
+          csi:
+            driver: disk-csi-driver.mks.ycloud.io
+            fsType: ext4
+            volumeHandle: "{{ item.value }}"
+    loop: "{{ elasticseach_id }}"

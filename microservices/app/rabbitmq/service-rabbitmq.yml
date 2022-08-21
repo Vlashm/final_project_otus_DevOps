@@ -1,0 +1,20 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rabbitmq
+  namespace: app
+  labels:
+    app: search_engine
+    component: rabbitmq
+spec:
+  ports:
+  - name: http
+    protocol: TCP
+    port: 15672
+  - name: amqp
+    protocol: TCP
+    port: 5672
+  selector:
+    app: search_engine
+    component: rabbitmq

@@ -1,0 +1,47 @@
+---
+- name: Start Gitlab Runner
+  hosts: all
+  become: true
+  # vars:
+  #   external_ip: "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}"
+  tasks:
+
+    - name: Get runner token
+      community.docker.docker_container_exec:
+        container: gitlab
+        command: 'gitlab-rails runner -e production "puts Gitlab::CurrentSettings.current_application_settings.runners_registration_token"'
+      register: runner_token
+
+    - name: Print runner token
+      ansible.builtin.debug:
+        msg: runner{{ runner_token }}
+
+    - name: Set gitlab runner token
+      set_fact:
+        gitlab_runner_token: "{{ runner_token.stdout }}"
+
+    - name: Start Gitlab Runner
+      community.docker.docker_container:
+        name: gitlab-runner
+        image: gitlab/gitlab-runner:latest
+        restart: yes
+        state: started
+        restart_policy: always
+        volumes:
+          - /srv/gitlabrunner/config:/etc/gitlab-runner
+          - /var/run/docker.sock:/var/run/docker.sock
+
+    - name: register docker runner
+      command: |
+        docker exec -it gitlab-runner gitlab-runner register \
+        --url http://gitlab.vlashm.site \
+        --non-interactive \
+        --locked=false \
+        --name DockerRunner \
+        --registration-token {{ gitlab_runner_token }} \
+        --executor docker \
+        --docker-image alpine:latest \
+        --docker-privileged \
+        --tag-list "linux,xenial,ubuntu,docker" \
+        --run-untagged \
+        --docker-volumes "/var/run/docker.sock:/var/run/docker.sock"

@@ -1,0 +1,31 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: server-mongodb
+  namespace: app
+  labels:
+    app: search_engine
+    component: mongodb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: search_engine
+      component: mongodb
+  template:
+    metadata:
+      name: server-mongodb
+      labels:
+        app: search_engine
+        component: mongodb
+    spec:
+      containers:
+      - image: mongo:4.2.18
+        name: mongodb
+        volumeMounts:
+        - name: mongodb
+          mountPath: /data/db
+      volumes:
+      - name: mongodb
+        emptyDir: {}
