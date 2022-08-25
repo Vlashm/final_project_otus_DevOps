@@ -1,0 +1,39 @@
+---
+crawler:
+  service:
+    internalPort: 8000
+    externalPort: 8000
+
+  image:
+    repository: vlashm/crawler
+    tag: latest
+
+ui:
+  service:
+    internalPort: 8000
+    externalPort: 8000
+
+  image:
+    repository: vlashm/crawler-ui
+    tag: latest
+
+  ingress:
+    class: nginx
+
+mongodb:
+  service:
+    internalPort: 27017
+    externalPort: 27017
+
+  image:
+    repository: mongo
+    tag: 4.2.18
+
+rabbitmq:
+  service:
+    internalPort: 27017
+    externalPort: 27017
+
+  image:
+    repository: bitnami/rabbitmq
+    tag: latest

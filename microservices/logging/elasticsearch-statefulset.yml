@@ -40,7 +40,7 @@ spec:
           - name: cluster.initial_master_nodes
             value: "es-cluster-0, es-cluster-1, es-cluster-2"
           - name: ES_JAVA_OPTS
-            value: "-Xms512m -Xmx512m"
+            value: "-Xms1g -Xmx1g"
           - name: xpack.security.enabled
             value: "false"
       initContainers:

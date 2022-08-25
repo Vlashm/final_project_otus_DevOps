@@ -2,7 +2,12 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Release.Name }}-{{ .Chart.Name }}
+  name: {{ template "ui.fullname" . }}
+  namespace: app
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "{{ .Values.service.internalPort }}"
+    prometheus.io/path: "/metrics"
   labels:
     app: search_engine
     component: ui
@@ -16,6 +21,10 @@ spec:
   template:
     metadata:
       name: crawler-ui
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "{{ .Values.service.internalPort }}"
+        prometheus.io/path: "/metrics"
       labels:
         app: search_engine
         component: ui
@@ -26,6 +35,6 @@ spec:
         name: ui
         env:
           - name: MONGO
-            value:  '{{ .Values.MONGO | default (printf "%s-mongodb" .Release.Name) }}'
+            value:  '{{ .Values.MONGO | default (printf "mongodb") }}'
           - name: MONGO_PORT
             value:  '{{ .Values.MONGO_PORT | default (printf "27017" ) }}'

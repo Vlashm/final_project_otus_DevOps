@@ -2,19 +2,21 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ template "crawler.fullname" . }}
+  name: {{ template "rabbitmq.fullname" . }}
   namespace: app
   labels:
     app: search_engine
-    component: crawler
+    component: rabbitmq
     release: {{ .Release.Name }}
 spec:
-  type: ClusterIP
   ports:
-    - port: {{ .Values.service.externalPort }}
+    - name: http
       protocol: TCP
-      targetPort: {{ .Values.service.internalPort }}
+      port: 15672
+    - name: amqp
+      protocol: TCP
+      port: 5672
   selector:
     app: search_engine
-    component: crawler
+    component: rabbitmq
     release: {{ .Release.Name }}

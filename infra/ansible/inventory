@@ -1,2 +1,2 @@
 [gitlab]
-gitlab-host ansible_host=84.201.133.40
+gitlab-host ansible_host=62.84.114.218

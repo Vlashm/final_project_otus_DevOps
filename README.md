@@ -1,6 +1,4 @@
-# Проектная работа: Создание процесса непрерывной поставки для приложения с применением Практик CI/CD и быстрой обратной связью
-
-В процессе: создание *CI/CD* на базе *GitLab*, подключение оповещений, мелкие доработки уже существующего кода и исправление возможных ошибок  
+# Проектная работа: Создание процесса непрерывной поставки для приложения с применением Практик CI/CD и быстрой обратной связью 
 
 ## Необходимые локальные инструменты
 
@@ -9,6 +7,7 @@
 - Ansible
 - Terraform
 - Kubectl
+- helm
 
 ## Внешние ресурсы
 
@@ -17,20 +16,21 @@
 
 ## Запуск проекта
 
-### Terraform
+### Создание инфраструктуры
 
-В дирректории *infra/terraform* создать файл *terraform.tfvars* со своими значениями, используя как шаблон файл *terraform.tfvars.example*. Затем выполнить команды:
+В дирректории *infra/terraform* создать файл *terraform.tfvars* со своими значениями, используя как шаблон файл *terraform.tfvars.example*. Затем в корневой директории проекта выполнить команду:
 
         terraform init
         terraform apply
 
 В результате *terraform* создаст:
 - Сеть, подсеть и DNS зону
-- Виртуальную машину для *GitLab* и создаст запись в *DNS cloud* для *gitlab*
+- Виртуальную машину *GitLab* и создаст запись в *DNS cloud* для *gitlab*
 - Кластер *Kubernetes* с тремя нодами
 - Три диска *yandex compute disk* для *Elasticsearch* и файл переменных *штакф/ansible/values/elasticsearch_id_file.yml* с их id
 - Настроит контекст *kubectl*
-- Произведет установку *ingress*
+
+В корневой директории выполнить команду `make install_ingress` для установки ingress контроллера
 
 В дирректории *infra/terraform/dns* выполнить команды:
 
@@ -56,34 +56,45 @@
 
 ## Микросервисы
 
-В директории *microservices* выполнить команду `kubectl apply -f namespace.yml` для создания пространств имён
+В корневой директории выполнить команду `make create_namespace` для создания пространств имён.
 
 ### Приложение
 
-Для поднятия приложения в директории *microservices* выполнить команды: 
+Для поднятия приложения в корневой директории выполнить команду `make install_app`. В кластере *Kubernetes* будут подняты:
 
-        kubectl apply -f app/rabbitmq
-        kubectl apply -f app/mongo
-        kubectl apply -f app/crawler
+- rabbitmq
+- mongodb
+- crawler
+- crawler-ui
 
-Приложение будкт доступно по адресу *app.<ваш_домен>*
+Приложение будет доступно по адресу *app.<ваш_домен>*
 
 ### Monitoring
 
-Для поднятия сервисов мониторинга в директории *microservices* выполнить команды: 
+Для поднятия сервисов мониторинга в корневой директории  выполнить команды `make install_monitoring`. будут установлены:
 
-        kubectl apply -f monitorimg/prometheus
-        kubectl apply -f monitoring/grafana
+- Prometheus
+- Grafana
 
 *Prometheus* будет доступен по адресу *prometheus.<ваш_домен>*
 *Grafana* будет доступна по адресу *grafana.<ваш_домен>*
 
 ### Logging
 
-Для поднятия сервисов сбора логов в директории *microservices* выполнить команды: 
-
-        kubectl apply -f logging
+Для поднятия сервисов ljubhjdfybz в корневой директории  выполнить команды `make install_logging`
 
 *Kibana* будет доступна по адресу *kibana.<ваш_домен>*
 
 ### Gitlab CI/CD
+
+- Для получения пароля *root* и токена для *gitlab-runner* выполнить команду `make get_gitlab_root_pass`
+- Для установки *gitlab-runner* в файле *infra/gitlab-runner/values.yaml* указать свой *URL* и токен, полученный предыдущей командой
+- Зайти на *gitlab.<ваш_домен>*, используя полученный *root* пароль, создать группу *crawler* и проект *crawler*
+
+В CI/CD реализованы следующие этапы (stages):
+
+- test - тестирование приложения
+- build - сборка приложения
+- review - обзор и проверка приложения
+- release - отправка образов на Docker Hub
+- deploy - развертывание приложения

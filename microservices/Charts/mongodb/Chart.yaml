@@ -1,0 +1,9 @@
+---
+apiVersion: v2
+appVersion: "1.0.0"
+name: mongodb
+version: 4.2.18
+description: OTUS DevOps final project application MONGODB
+maintainers:
+  - name: vlashm
+    email: vlad_83@mail.ru

@@ -1,0 +1,21 @@
+---
+- name: Install Gitlab
+  hosts: all
+  become: true
+  tasks:
+
+    - name: Get root password
+      command: "grep 'Password:' /etc/gitlab/initial_root_password"
+      register: root_pass
+
+    - name: Print password
+      ansible.builtin.debug:
+        msg: "{{ root_pass.stdout }}"
+
+    - name: Get runner token
+      command: 'gitlab-rails runner -e production "puts Gitlab::CurrentSettings.current_application_settings.runners_registration_token"'
+      register: runner_token
+
+    - name: Print runner token
+      ansible.builtin.debug:
+        msg: runner{{ runner_token.stdout }}

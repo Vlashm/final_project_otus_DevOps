@@ -1,0 +1,8 @@
+---
+service:
+  internalPort: 27017
+  externalPort: 27017
+
+image:
+  repository: bitnami/rabbitmq
+  tag: latest

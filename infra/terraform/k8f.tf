@@ -58,7 +58,6 @@ resource "null_resource" "get_k8s_context" {
   provisioner "local-exec" {
     command = <<-EOT
       yc managed-kubernetes cluster get-credentials k8s-cluster --external --force
-      kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.2.1/deploy/static/provider/cloud/deploy.yaml
     EOT
   }
   depends_on = [yandex_kubernetes_node_group.k8s_groups]

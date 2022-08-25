@@ -1,0 +1,8 @@
+---
+service:
+  internalPort: 27017
+  externalPort: 27017
+
+image:
+  repository: mongo
+  tag: 4.2.18
